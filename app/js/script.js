@@ -6,6 +6,8 @@ const minuteHand = document.querySelector('#minute')
 const secondHand = document.querySelector('#second')
 
 let globalSecondsLapsed;
+let clockInterval;
+let isPaused = false;
 
 function setClockTimeToCurrent(){
     const today = new Date();
@@ -25,9 +27,25 @@ function createButtonsForManagingClock() {
     let buttonContainer = document.createElement('div');
     let pauseButton = document.createElement('button');
 
-
     buttonContainer.classList.add('button-container');
     pauseButton.classList.add("pause");
+
+    pauseButton.addEventListener('click', (event) => {
+        if(isPaused) {
+            clockInterval = setInterval(() => {
+                globalSecondsLapsed++;
+                moveHands()
+            }, 1000)
+            event.target.textContent = "Pause"
+            isPaused = false;
+        }
+        else{
+            clearInterval(clockInterval)
+            event.target.textContent = "Start"
+            isPaused = true;
+        }
+
+    })
 
     pauseButton.textContent = "Pause"
 
@@ -64,10 +82,13 @@ function createForm(){
 }
 
 
+
+
+
 createButtonsForManagingClock();
 
 setClockTimeToCurrent()
-setInterval(() => {
+clockInterval = setInterval(() => {
     globalSecondsLapsed++;
     moveHands()
 }, 1000)
