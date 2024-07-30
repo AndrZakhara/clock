@@ -5,7 +5,7 @@ const hourHand = document.querySelector('#hour')
 const minuteHand = document.querySelector('#minute')
 const secondHand = document.querySelector('#second')
 
-let globalSecondsLapsed = 3589;
+let globalSecondsLapsed;
 
 function setClockTimeToCurrent(){
     const today = new Date();
@@ -20,6 +20,51 @@ function moveHands(){
     hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * ((globalSecondsLapsed/3600)*5)}deg)`;
 
 }
+
+function createButtonsForManagingClock() {
+    let buttonContainer = document.createElement('div');
+    let pauseButton = document.createElement('button');
+
+
+    buttonContainer.classList.add('button-container');
+    pauseButton.classList.add("pause");
+
+    pauseButton.textContent = "Pause"
+
+    document.querySelector(".main").append(buttonContainer);
+    buttonContainer.append(pauseButton);
+    buttonContainer.append(createForm());
+}
+
+function createForm(){
+    let timeZonesChoiceForm = document.createElement('form');
+    let formContainer = document.createElement('div');
+
+    formContainer.classList.add('form-container');
+    formContainer.append(timeZonesChoiceForm);
+
+    for(let i = -3; i < 4; i++){
+        let choiceContainer = document.createElement('div');
+        let timeZoneChoice = document.createElement('input');
+        let timeZoneChoiceLabel = document.createElement('label');
+
+        timeZoneChoiceLabel.for = i
+        timeZoneChoiceLabel.textContent = `Utc ${i}`;
+
+        timeZoneChoice.type = "checkbox";
+        timeZoneChoice.value = i;
+        timeZoneChoice.id = i
+
+        choiceContainer.append(timeZoneChoice);
+        choiceContainer.append(timeZoneChoiceLabel);
+        timeZonesChoiceForm.append(choiceContainer);
+    }
+
+    return formContainer;
+}
+
+
+createButtonsForManagingClock();
 
 setClockTimeToCurrent()
 setInterval(() => {
