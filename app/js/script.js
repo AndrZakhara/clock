@@ -12,6 +12,9 @@ let isPaused = false;
 function setClockTimeToCurrent(){
     const today = new Date();
     const timeZone = -today.getTimezoneOffset()/60;
+    const timeZoneCheckbox = document.querySelector(`#Utc${timeZone}`);
+
+    timeZoneCheckbox.checked = true;
 
     globalSecondsLapsed = today.getTime()/1000 + (3600 * timeZone);
 
@@ -75,8 +78,8 @@ function createForm(){
 
         timeZoneChoice.type = "checkbox";
         timeZoneChoice.classList.add('time-zone');
-        timeZoneChoice.value = i;
-        timeZoneChoice.id = i
+        timeZoneChoice.value = String(i);
+        timeZoneChoice.id = `Utc${i}`
 
         choiceContainer.append(timeZoneChoice);
         choiceContainer.append(timeZoneChoiceLabel);
