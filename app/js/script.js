@@ -14,6 +14,10 @@ function setClockTimeToCurrent(){
     const timeZone = -today.getTimezoneOffset()/60;
 
     globalSecondsLapsed = today.getTime()/1000 + (3600 * timeZone);
+
+    turnOffHandsAnimation()
+    moveHands()
+    turnOnHandsAnimation()
 }
 
 function moveHands(){
@@ -70,6 +74,7 @@ function createForm(){
         timeZoneChoiceLabel.textContent = `Utc ${i}`;
 
         timeZoneChoice.type = "checkbox";
+        timeZoneChoice.classList.add('time-zone');
         timeZoneChoice.value = i;
         timeZoneChoice.id = i
 
@@ -78,16 +83,53 @@ function createForm(){
         timeZonesChoiceForm.append(choiceContainer);
     }
 
+    timeZonesChoiceForm.addEventListener('change', (event) => {
+        let checkBoxes = timeZonesChoiceForm.querySelectorAll('.time-zone');
+        if(event.target.checked) {
+            checkBoxes.forEach(checkBox => {
+                if (checkBox !== event.target) {
+                    checkBox.checked = false
+                }
+            });
+            changeTimeZone(+event.target.value)
+        }
+        else
+            event.target.checked = true
+    })
+
     return formContainer;
 }
 
+function changeTimeZone(timeZone){
+    const today = new Date();
+
+    globalSecondsLapsed = today.getTime()/1000 + (3600 * timeZone);
 
 
+    turnOffHandsAnimation()
+    moveHands()
+    setTimeout(() => {turnOnHandsAnimation()},1)
 
+}
+
+function turnOffHandsAnimation(){
+    hourHand.style.transition = 'none'
+    minuteHand.style.transition = 'none'
+    secondHand.style.transition = 'none'
+}
+
+function turnOnHandsAnimation(){
+    hourHand.style.transition = 'transform .5s ease-in-out'
+    minuteHand.style.transition = 'transform .5s ease-in-out'
+    secondHand.style.transition = 'transform .5s ease-in-out'
+}
 
 createButtonsForManagingClock();
 
+
 setClockTimeToCurrent()
+
+
 clockInterval = setInterval(() => {
     globalSecondsLapsed++;
     moveHands()
