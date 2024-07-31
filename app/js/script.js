@@ -6,8 +6,12 @@ const minuteHand = document.querySelector('#minute')
 const secondHand = document.querySelector('#second')
 
 let globalSecondsLapsed;
+let minutes;
+let hours;
 let clockInterval;
 let isPaused = false;
+let isCustomTime = false;
+
 
 function setClockTimeToCurrent(){
     const today = new Date();
@@ -23,12 +27,20 @@ function setClockTimeToCurrent(){
     turnOnHandsAnimation()
 }
 
-function moveHands(){
-    secondHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed}deg)`;
-    minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * Math.floor(globalSecondsLapsed/60)}deg)`;
-    hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * ((globalSecondsLapsed/3600)*5)}deg)`;
 
+function moveHands() {
+    if(!isCustomTime) {
+        secondHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed}deg)`;
+        minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * Math.floor(globalSecondsLapsed / 60)}deg)`;
+        hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * ((globalSecondsLapsed / 3600) * 5)}deg)`;
+    }
+    else {
+        secondHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed}deg)`;
+        minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * minutes}deg)`;
+        hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * (hours * 5)}deg)`;
+    }
 }
+
 
 function createButtonsForManagingClock() {
     let buttonContainer = document.createElement('div');
@@ -40,7 +52,7 @@ function createButtonsForManagingClock() {
     pauseButton.addEventListener('click', (event) => {
         if(isPaused) {
             clockInterval = setInterval(() => {
-                globalSecondsLapsed++;
+                updateTime()
                 moveHands()
             }, 1000)
             event.target.textContent = "Pause"
@@ -60,6 +72,7 @@ function createButtonsForManagingClock() {
     buttonContainer.append(pauseButton);
     buttonContainer.append(createForm());
 }
+
 
 function createForm(){
     let timeZonesChoiceForm = document.createElement('form');
@@ -103,17 +116,18 @@ function createForm(){
     return formContainer;
 }
 
+
 function changeTimeZone(timeZone){
     const today = new Date();
+    isCustomTime = false;
 
     globalSecondsLapsed = today.getTime()/1000 + (3600 * timeZone);
-
 
     turnOffHandsAnimation()
     moveHands()
     setTimeout(() => {turnOnHandsAnimation()},1)
-
 }
+
 
 function turnOffHandsAnimation(){
     hourHand.style.transition = 'none'
@@ -121,20 +135,131 @@ function turnOffHandsAnimation(){
     secondHand.style.transition = 'none'
 }
 
+
 function turnOnHandsAnimation(){
     hourHand.style.transition = 'transform .5s ease-in-out'
     minuteHand.style.transition = 'transform .5s ease-in-out'
     secondHand.style.transition = 'transform .5s ease-in-out'
 }
 
-createButtonsForManagingClock();
 
+function calculateAngle(x,y){
+    const svg = document.querySelector('svg');
+    const centerX = svg.getBoundingClientRect().left + svg.clientWidth/2;
+    const centerY = svg.getBoundingClientRect().top + svg.clientHeight/2;
+    let angle = 90 + Math.atan2(y-centerY, x - centerX) * 180/Math.PI;
+
+    if(angle < 0)
+        angle = 270 + (90 + angle);
+
+    return  angle
+}
+
+hourHand.addEventListener('mousedown', (event) => {
+    if(!isPaused) return
+
+    isCustomTime = true
+    turnOffHandsAnimation()
+    hourHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+
+    document.onmousemove = function(event)  {
+        hourHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+    }
+
+    document.onmouseup = () => {
+        document.onmousemove = null
+        document.onmouseup = null
+        hours = getHandTimeOnClock(hourHand)
+        minutes = getHandTimeOnClock(minuteHand)
+        globalSecondsLapsed = getHandTimeOnClock(secondHand)
+        moveHands()
+        setTimeout(turnOnHandsAnimation,1)
+    }
+})
+
+minuteHand.addEventListener('mousedown', (event) => {
+    if(!isPaused) return
+
+    isCustomTime = true
+    turnOffHandsAnimation()
+    minuteHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+
+    document.onmousemove = function(event)  {
+        minuteHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+    }
+
+    document.onmouseup = () => {
+        document.onmousemove = null
+        document.onmouseup = null
+        hours = getHandTimeOnClock(hourHand)
+        minutes = getHandTimeOnClock(minuteHand)
+        globalSecondsLapsed = getHandTimeOnClock(secondHand)
+        moveHands()
+        setTimeout(turnOnHandsAnimation,1)
+    }
+})
+
+secondHand.addEventListener('mousedown', (event) => {
+    if(!isPaused) return
+
+    isCustomTime = true
+    turnOffHandsAnimation()
+    secondHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+
+    document.onmousemove = function(event)  {
+        secondHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+    }
+
+    document.onmouseup = () => {
+        document.onmousemove = null
+        document.onmouseup = null
+        hours = getHandTimeOnClock(hourHand)
+        minutes = getHandTimeOnClock(minuteHand)
+        globalSecondsLapsed = getHandTimeOnClock(secondHand)
+        moveHands()
+        setTimeout(turnOnHandsAnimation,1)
+    }
+})
+
+function getHandTimeOnClock(hand){
+    let handSin = parseFloat(getComputedStyle(hand).transform.slice(7))
+    let handCos = parseFloat(getComputedStyle(hand).transform.split(",")[1])
+    let handAngle = 90 - (Math.atan2(handSin, handCos) * 180/Math.PI)
+
+    if (handAngle < 0)
+        handAngle = 270 + (90 + handAngle)
+
+    if(hand.id === "hour"){
+        return Math.floor(handAngle * 120/3600)
+    } else if(hand.id === "minute"){
+        return Math.floor((handAngle * 10)/60)
+    } else{
+        return Math.floor(handAngle/6)
+    }
+
+}
+
+function updateTime(){
+    if(!isCustomTime) {
+        globalSecondsLapsed++;
+    }
+    else{
+        globalSecondsLapsed++;
+        if(globalSecondsLapsed % 60 === 0) {
+            minutes++
+            if(minutes % 60 === 0){
+                hours++
+            }
+        }
+    }
+}
+
+createButtonsForManagingClock();
 
 setClockTimeToCurrent()
 
-
 clockInterval = setInterval(() => {
-    globalSecondsLapsed++;
+    updateTime()
     moveHands()
 }, 1000)
 
