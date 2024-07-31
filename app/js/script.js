@@ -22,7 +22,7 @@ function setClockTimeToCurrent(){
 
 function moveHands(){
     secondHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed}deg)`;
-    minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed/60}deg)`;
+    minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * Math.floor(globalSecondsLapsed/60)}deg)`;
     hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * ((globalSecondsLapsed/3600)*5)}deg)`;
 
 }
