@@ -147,54 +147,37 @@ function calculateAngle(x,y){
 
 
 hourHand.addEventListener('mousedown', (event) => {
-    if(!isPaused) return
-
-    turnOffHandsAnimation()
-    hourHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-
-    document.onmousemove = function(event)  {
-        hourHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-    }
-
-    document.onmouseup = () => {
-        dropTheArrow()
-    }
+    grabTheHand(hourHand, event)
 })
 
 
 minuteHand.addEventListener('mousedown', (event) => {
-    if(!isPaused) return
-
-    turnOffHandsAnimation()
-    minuteHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-
-    document.onmousemove = function(event)  {
-        minuteHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-    }
-
-    document.onmouseup = () => {
-        dropTheArrow()
-    }
+    grabTheHand(minuteHand, event)
 })
 
 
 secondHand.addEventListener('mousedown', (event) => {
-    if(!isPaused) return
-
-    turnOffHandsAnimation()
-    secondHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-
-    document.onmousemove = function(event)  {
-        secondHand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-    }
-
-    document.onmouseup = () => {
-        dropTheArrow()
-    }
+    grabTheHand(secondHand, event)
 })
 
 
-function dropTheArrow(){
+function grabTheHand(hand, event){
+    if(!isPaused) return
+
+    turnOffHandsAnimation()
+    hand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+
+    document.onmousemove = function(event)  {
+        hand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+    }
+
+    document.onmouseup = () => {
+        dropTheHand()
+    }
+}
+
+
+function dropTheHand(){
     document.onmousemove = null
     document.onmouseup = null
     globalSecondsLapsed = getHandTimeOnClock(secondHand)
