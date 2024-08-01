@@ -190,7 +190,7 @@ function dropTheHand(){
 function getHandTimeOnClock(hand){
     let handSin = parseFloat(getComputedStyle(hand).transform.slice(7))
     let handCos = parseFloat(getComputedStyle(hand).transform.split(",")[1])
-    let handAngle = 90 - (Math.atan2(handSin, handCos) * 180/Math.PI)
+    let handAngle = 90 - (Math.atan2(handSin, handCos) * 180/Math.PI) + 0.1
 
     if (handAngle < 0)
         handAngle = 270 + (90 + handAngle)
