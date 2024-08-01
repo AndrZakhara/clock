@@ -21,7 +21,7 @@ function setClockTimeToCurrent(){
 
     turnOffHandsAnimation()
     moveHands()
-    turnOnHandsAnimation()
+    setTimeout(turnOnHandsAnimation, 1)
 }
 
 
@@ -115,7 +115,7 @@ function changeTimeZone(timeZone){
 
     turnOffHandsAnimation()
     moveHands()
-    setTimeout(() => {turnOnHandsAnimation()},1)
+    setTimeout(turnOnHandsAnimation,1)
 }
 
 
