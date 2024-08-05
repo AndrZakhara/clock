@@ -9,6 +9,23 @@ let globalSecondsLapsed;
 let clockInterval;
 let isPaused = false;
 
+function moveHands() {
+    secondHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed}deg)`;
+    minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * Math.floor(globalSecondsLapsed / 60)}deg)`;
+    hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * (Math.floor(globalSecondsLapsed / 3600) * 5)}deg)`;
+}
+
+function turnOffHandsAnimation(){
+    hourHand.style.transition = 'none'
+    minuteHand.style.transition = 'none'
+    secondHand.style.transition = 'none'
+}
+
+function turnOnHandsAnimation(){
+    hourHand.style.transition = 'transform .5s ease-in-out'
+    minuteHand.style.transition = 'transform .5s ease-in-out'
+    secondHand.style.transition = 'transform .5s ease-in-out'
+}
 
 function setClockTimeToCurrent(){
     const today = new Date();
@@ -23,14 +40,6 @@ function setClockTimeToCurrent(){
     moveHands()
     setTimeout(turnOnHandsAnimation, 1)
 }
-
-
-function moveHands() {
-        secondHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * globalSecondsLapsed}deg)`;
-        minuteHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * Math.floor(globalSecondsLapsed / 60)}deg)`;
-        hourHand.style.transform = `rotate(${ONE_DIVISION_DEGREES * (Math.floor(globalSecondsLapsed / 3600) * 5)}deg)`;
-}
-
 
 function createButtonsForManagingClock() {
     let buttonContainer = document.createElement('div');
@@ -63,7 +72,6 @@ function createButtonsForManagingClock() {
     buttonContainer.append(pauseButton);
     buttonContainer.append(createForm());
 }
-
 
 function createForm(){
     let timeZonesChoiceForm = document.createElement('form');
@@ -107,7 +115,6 @@ function createForm(){
     return formContainer;
 }
 
-
 function changeTimeZone(timeZone){
     const today = new Date();
 
@@ -117,21 +124,6 @@ function changeTimeZone(timeZone){
     moveHands()
     setTimeout(turnOnHandsAnimation,1)
 }
-
-
-function turnOffHandsAnimation(){
-    hourHand.style.transition = 'none'
-    minuteHand.style.transition = 'none'
-    secondHand.style.transition = 'none'
-}
-
-
-function turnOnHandsAnimation(){
-    hourHand.style.transition = 'transform .5s ease-in-out'
-    minuteHand.style.transition = 'transform .5s ease-in-out'
-    secondHand.style.transition = 'transform .5s ease-in-out'
-}
-
 
 function calculateAngle(x,y){
     const svg = document.querySelector('svg');
@@ -144,48 +136,6 @@ function calculateAngle(x,y){
 
     return  angle
 }
-
-
-hourHand.addEventListener('mousedown', (event) => {
-    grabTheHand(hourHand, event)
-})
-
-
-minuteHand.addEventListener('mousedown', (event) => {
-    grabTheHand(minuteHand, event)
-})
-
-
-secondHand.addEventListener('mousedown', (event) => {
-    grabTheHand(secondHand, event)
-})
-
-
-function grabTheHand(hand, event){
-    if(!isPaused) return
-
-    turnOffHandsAnimation()
-    hand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-
-    document.onmousemove = function(event)  {
-        hand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
-    }
-
-    document.onmouseup = () => {
-        dropTheHand()
-    }
-}
-
-
-function dropTheHand(){
-    document.onmousemove = null
-    document.onmouseup = null
-    globalSecondsLapsed = getHandTimeOnClock(secondHand)
-        + getHandTimeOnClock(minuteHand) + getHandTimeOnClock(hourHand)
-    moveHands()
-    setTimeout(turnOnHandsAnimation,1)
-}
-
 
 function getHandTimeOnClock(hand){
     let handSin = parseFloat(getComputedStyle(hand).transform.slice(7))
@@ -204,6 +154,42 @@ function getHandTimeOnClock(hand){
     }
 
 }
+
+function dropTheHand(){
+    document.onmousemove = null
+    document.onmouseup = null
+    globalSecondsLapsed = getHandTimeOnClock(secondHand)
+        + getHandTimeOnClock(minuteHand) + getHandTimeOnClock(hourHand)
+    moveHands()
+    setTimeout(turnOnHandsAnimation,1)
+}
+
+function grabTheHand(hand, event){
+    if(!isPaused) return
+
+    turnOffHandsAnimation()
+    hand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+
+    document.onmousemove = function(event)  {
+        hand.style.transform = `rotate(${calculateAngle(event.clientX, event.clientY)}deg)`;
+    }
+
+    document.onmouseup = () => {
+        dropTheHand()
+    }
+}
+
+hourHand.addEventListener('mousedown', (event) => {
+    grabTheHand(hourHand, event)
+})
+
+minuteHand.addEventListener('mousedown', (event) => {
+    grabTheHand(minuteHand, event)
+})
+
+secondHand.addEventListener('mousedown', (event) => {
+    grabTheHand(secondHand, event)
+})
 
 createButtonsForManagingClock();
 
