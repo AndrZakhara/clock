@@ -5,6 +5,11 @@ const hourHand = document.querySelector('#hour')
 const minuteHand = document.querySelector('#minute')
 const secondHand = document.querySelector('#second')
 
+let clockHands = []
+clockHands.push(secondHand)
+clockHands.push(minuteHand)
+clockHands.push(hourHand)
+
 let globalSecondsLapsed;
 let clockInterval;
 let isPaused = false;
@@ -16,15 +21,15 @@ function moveHands() {
 }
 
 function turnOffHandsAnimation(){
-    hourHand.style.transition = 'none'
-    minuteHand.style.transition = 'none'
-    secondHand.style.transition = 'none'
+    for(let i = 0; i < clockHands.length; i++){
+        clockHands[i].style.transition = 'none';
+    }
 }
 
 function turnOnHandsAnimation(){
-    hourHand.style.transition = 'transform .5s ease-in-out'
-    minuteHand.style.transition = 'transform .5s ease-in-out'
-    secondHand.style.transition = 'transform .5s ease-in-out'
+    for(let i = 0; i < clockHands.length; i++){
+        clockHands[i].style.transition = 'transform .5s ease-in-out';
+    }
 }
 
 function setClockTimeToCurrent(){
@@ -179,17 +184,10 @@ function grabTheHand(hand, event){
     }
 }
 
-hourHand.addEventListener('mousedown', (event) => {
-    grabTheHand(hourHand, event)
-})
-
-minuteHand.addEventListener('mousedown', (event) => {
-    grabTheHand(minuteHand, event)
-})
-
-secondHand.addEventListener('mousedown', (event) => {
-    grabTheHand(secondHand, event)
-})
+document.addEventListener('mousedown', (event) => {
+    if(clockHands.includes(event.target.parentNode))
+        grabTheHand(event.target.parentNode, event);
+});
 
 createButtonsForManagingClock();
 
